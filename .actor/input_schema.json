@@ -1,0 +1,88 @@
+{
+    "title": "Idnes reality scraper config",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "location": {
+            "title": "Location of property",
+            "type": "string",
+            "description": "At what place should the actor look",
+            "prefill": "Praha",
+            "editor": "textfield"
+        },
+        "maxResults": {
+            "title": "Amount of properties",
+            "type": "integer",
+            "description": "How many properties to return.",
+            "default": 100,
+            "editor": "number",
+            "minimum": 1
+        },
+        "propertyType": {
+            "title": "Property type",
+            "type": "string",
+            "description": "What property type you want to look for.",
+            "default": "all",
+            "editor": "select",
+            "enum": ["all", "apartment", "house"]
+        },
+        "dealType": {
+            "title": "Deal type",
+            "type": "string",
+            "description": "What deal type you want to look for.",
+            "default": "all",
+            "editor": "select",
+            "enum": ["all", "rent", "buy"]
+        },
+        "minSize": {
+            "title": "Minimum property area size",
+            "type": "integer",
+            "description": "Minimum property area size (in m2).",
+            "prefill": 0,
+            "editor": "number"
+        },
+        "maxSize": {
+            "title": "Maximum property area size",
+            "type": "integer",
+            "description": "Maximum property area size.",
+            "prefill": 1000000,
+            "editor": "number"
+        },
+        "minPrice": {
+            "title": "Minimum price",
+            "type": "integer",
+            "description": "Minimum property / rent price (in CZK).",
+            "prefill": 0,
+            "editor": "number"
+        },
+        "maxPrice": {
+            "title": "Maximum price",
+            "type": "integer",
+            "description": "Maximum property / rent price (in CZK).",
+            "prefill": 1000000,
+            "editor": "number"
+        },
+        "includeDescription": {
+            "title": "Include description",
+            "type": "boolean",
+            "description": "Include description.",
+            "default": false,
+            "editor": "checkbox"
+        },
+        "includeSellerInfo": {
+            "title": "Include seller contact info",
+            "type": "boolean",
+            "description": "WARNING: Could potentially be problematic with the law, you have been warned",
+            "default": false,
+            "editor": "checkbox"
+        }
+    },
+    "required": [
+        "location",
+        "maxResults",
+        "propertyType",
+        "dealType",
+        "includeDescription",
+        "includeSellerInfo"
+    ]
+}
