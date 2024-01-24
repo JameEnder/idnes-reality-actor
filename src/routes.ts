@@ -1,11 +1,13 @@
-import { createCheerioRouter, Dataset } from 'crawlee';
+import { createCheerioRouter, Dataset, useState } from 'crawlee';
 import { labels } from './constants.js';
 import { createUrl, infoFromTitle } from './utils.js';
 import { Input } from './main.js';
 
 export const router = createCheerioRouter();
 
-let numberOfPropertiesQueued = 0;
+const numberOfPropertiesQueued = await useState('numberOfPropertiesQueued', {
+    value: 0,
+});
 
 // I like this format, as it makes it easy for the developer to see
 // which handlers are implemented with the typehints.
@@ -63,7 +65,7 @@ router.addHandler<RouteUserData['LIST']>(labels.LIST, async ({ log, $, crawler, 
     const productRequests = [];
 
     for (const productElement of productsElement) {
-        if (numberOfPropertiesQueued >= maxResults) continue;
+        if (numberOfPropertiesQueued.value >= maxResults) continue;
 
         const element = $(productElement);
 
@@ -93,18 +95,18 @@ router.addHandler<RouteUserData['LIST']>(labels.LIST, async ({ log, $, crawler, 
             },
         );
 
-        numberOfPropertiesQueued += 1;
+        numberOfPropertiesQueued.value += 1;
     }
 
     await crawler.addRequests(productRequests);
 
     const nextPageElement = $('.paging__item.next');
 
-    if (nextPageElement && nextPageElement.attr('href') && numberOfPropertiesQueued < maxResults) {
+    if (nextPageElement && nextPageElement.attr('href') && numberOfPropertiesQueued.value < maxResults) {
         await crawler.addRequests([
             {
                 url: `https://reality.idnes.cz${nextPageElement.attr('href')}`,
-                label: 'LIST',
+                label: labels.LIST,
                 userData: request.userData,
             },
         ]);
@@ -112,7 +114,7 @@ router.addHandler<RouteUserData['LIST']>(labels.LIST, async ({ log, $, crawler, 
 });
 
 router.addHandler<RouteUserData['OFFER']>(labels.OFFER, async ({ log, $, request }) => {
-    const { includeDescription, includeSellerInfo } = request.userData;
+    const { includeSellerInfo } = request.userData;
     const { id, address } = request.userData.data;
 
     // eslint-disable-next-line no-irregular-whitespace
@@ -124,12 +126,12 @@ router.addHandler<RouteUserData['OFFER']>(labels.OFFER, async ({ log, $, request
 
     const firstThumbnailUrl = thumbnails.first().attr('src');
 
-    const tableRows = $('.b-definition-columns').find('dl').children();
+    const tableRows = $('.b-definition-columns').find('dl').find('dt');
     const table: Record<string, string> = {};
 
-    for (let i = 0; i < tableRows.length; i += 2) {
-        const key = $(tableRows[i]).text().trim();
-        const value = $(tableRows[i + 1]);
+    for (const heading of tableRows) {
+        const key = $(heading).text().trim();
+        const value = $(heading).next();
 
         if (key.includes('advertisement') || key.includes('Fixní ceny energií')) continue;
 
@@ -161,19 +163,19 @@ router.addHandler<RouteUserData['OFFER']>(labels.OFFER, async ({ log, $, request
         ID: sellerId,
     } : undefined;
 
-    const description = includeDescription ? $('.b-desc>p').text().trim() : undefined;
+    const description = $('.b-desc>p').text().trim();
 
-    const info = infoFromTitle(nicerTitle);
+    const propertyTypes = infoFromTitle(nicerTitle);
 
     await Dataset.pushData({
-        ID: id,
-        Název: nicerTitle,
-        Lokace: address,
-        'Typ nemovitosti': info.propertyTypeView,
-        'Typ výměny': info.dealTypeView,
-        Náhled: firstThumbnailUrl,
-        Podrobnosti: table,
-        Prodejce: seller,
-        Popis: description,
+        id,
+        nazev: nicerTitle,
+        lokace: address,
+        typNemovitosti: propertyTypes.propertyTypeView,
+        typVymeny: propertyTypes.dealTypeView,
+        nahled: firstThumbnailUrl,
+        podrobnosti: table,
+        prodejce: seller,
+        popis: description,
     });
 });

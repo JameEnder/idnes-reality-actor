@@ -12,7 +12,6 @@ export interface Input {
     maxSize?: number
     minPrice?: number
     maxPrice?: number
-    includeDescription: boolean
     includeSellerInfo: boolean
 }
 
@@ -29,7 +28,6 @@ const {
     maxSize,
     minPrice,
     maxPrice,
-    includeDescription = false,
     includeSellerInfo = false,
 } = input;
 
@@ -38,10 +36,6 @@ const proxyConfiguration = await Actor.createProxyConfiguration();
 const crawler = new CheerioCrawler({
     proxyConfiguration,
     requestHandler: router,
-
-    failedRequestHandler: async ({ error }) => {
-        log.error((error as Error).toString());
-    },
 });
 
 await crawler.addRequests([
@@ -57,7 +51,6 @@ await crawler.addRequests([
             maxSize,
             minPrice,
             maxPrice,
-            includeDescription,
             includeSellerInfo,
         },
     },

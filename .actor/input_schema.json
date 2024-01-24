@@ -11,7 +11,7 @@
             "editor": "textfield"
         },
         "maxResults": {
-            "title": "Amount of properties",
+            "title": "Max properties to scrape",
             "type": "integer",
             "description": "How many properties to return.",
             "default": 100,
@@ -37,7 +37,8 @@
         "minSize": {
             "title": "Minimum property area size",
             "type": "integer",
-            "description": "Minimum property area size (in m2).",
+            "description": "Minimum property area size.",
+            "unit": "m2",
             "prefill": 0,
             "editor": "number"
         },
@@ -45,13 +46,15 @@
             "title": "Maximum property area size",
             "type": "integer",
             "description": "Maximum property area size.",
+            "unit": "m2",
             "prefill": 1000000,
             "editor": "number"
         },
         "minPrice": {
             "title": "Minimum price",
             "type": "integer",
-            "description": "Minimum property / rent price (in CZK).",
+            "description": "Minimum property / rent price.",
+            "unit": "CZK",
             "prefill": 0,
             "editor": "number"
         },
@@ -59,15 +62,9 @@
             "title": "Maximum price",
             "type": "integer",
             "description": "Maximum property / rent price (in CZK).",
+            "unit": "CZK",
             "prefill": 1000000,
             "editor": "number"
-        },
-        "includeDescription": {
-            "title": "Include description",
-            "type": "boolean",
-            "description": "Include description.",
-            "default": false,
-            "editor": "checkbox"
         },
         "includeSellerInfo": {
             "title": "Include seller contact info",
@@ -77,12 +74,5 @@
             "editor": "checkbox"
         }
     },
-    "required": [
-        "location",
-        "maxResults",
-        "propertyType",
-        "dealType",
-        "includeDescription",
-        "includeSellerInfo"
-    ]
+    "required": ["location"]
 }
